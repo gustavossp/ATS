@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TalentaFlow — Simulação de ATS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F2F5F9;--surf:#FFFFFF;--ink:#14213D;--mut:#5B6678;--line:#D9E0EA;--acc:#2F4BDB;--acc-ink:#FFFFFF;
+--s0:#8A94A6;--s1:#B7791F;--s2:#2F4BDB;--s3:#0F8A5F;--s4:#C0392B;--hd:#FFFFFFF2;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1624;--surf:#182236;--ink:#E8EDF7;--mut:#9AA6BC;--line:#2A3752;--acc:#7C93FF;--acc-ink:#0F1624;--s0:#8A94A6;--s1:#E0A946;--s2:#7C93FF;--s3:#3FCB96;--s4:#F0776A;--hd:#0F1624F2}}
+:root[data-theme="dark"]{--bg:#0F1624;--surf:#182236;--ink:#E8EDF7;--mut:#9AA6BC;--line:#2A3752;--acc:#7C93FF;--acc-ink:#0F1624;--s0:#8A94A6;--s1:#E0A946;--s2:#7C93FF;--s3:#3FCB96;--s4:#F0776A;--hd:#0F1624F2}
+*{box-sizing:border-box}html{scroll-padding-top:calc(72px + env(safe-area-inset-top,0px));scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 "Bricolage Grotesque",system-ui,-apple-system,"Segoe UI",sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hd);z-index:10}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--hd);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.bar{max-width:1080px;margin:auto;padding:12px 20px;display:flex;align-items:center;gap:20px;justify-content:space-between}
+.logo{font-weight:800;font-size:19px;letter-spacing:-.02em}
+nav{display:flex;gap:4px;overflow-x:auto}
+nav a{color:var(--mut);text-decoration:none;font-size:14px;padding:6px 12px;border-radius:99px;white-space:nowrap}
+nav a:hover,nav a:focus-visible{background:var(--line);color:var(--ink);outline:none}
+main{max-width:1080px;margin:auto;padding:0 20px}
+section{padding:72px 0 8px}
+h1{font-size:clamp(2.4rem,6vw,4.4rem);line-height:1.02;letter-spacing:-.035em;font-weight:800;margin:0 0 20px;max-width:15ch}
+h2{font-size:clamp(1.6rem,3.4vw,2.3rem);letter-spacing:-.025em;line-height:1.15;margin:0 0 12px;font-weight:800}
+p.lead{font-size:1.15rem;color:var(--mut);max-width:62ch;margin:0 0 28px}
+p{max-width:68ch}
+.k{display:inline-block;font-weight:600;color:var(--acc);margin-bottom:6px;font-size:14px}
+.flow{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:8px;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surf)}
+.flow div{padding:16px 18px;border-right:1px solid var(--line)}.flow div:last-child{border:0}
+.flow b{display:block;font-size:2rem;line-height:1.1;font-weight:800}.flow span{font-size:14px;color:var(--mut)}
+.job{margin-top:20px;padding:14px 18px;border-left:4px solid var(--acc);background:var(--surf);border-radius:0 10px 10px 0;max-width:68ch}
+.job small{color:var(--mut)}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+button,.chip{font:inherit;cursor:pointer}
+.chip{border:1px solid var(--line);background:var(--surf);color:var(--ink);padding:6px 14px;border-radius:99px;font-size:14px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.btn{background:var(--acc);color:var(--acc-ink);border:0;padding:11px 20px;border-radius:10px;font-weight:600}
+.btn.sec{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:14px;background:var(--surf)}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:15px}
+th{text-align:left;font-weight:600;color:var(--mut);font-size:13px;padding:12px 16px;border-bottom:1px solid var(--line)}
+td{padding:12px 16px;border-bottom:1px solid var(--line);vertical-align:top}tr:last-child td{border:0}
+td small{display:block;color:var(--mut);font-size:13px}
+.st{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:14px;white-space:nowrap}
+.st::before{content:"";width:9px;height:9px;border-radius:50%;background:currentColor}
+.s0{color:var(--s0)}.s1{color:var(--s1)}.s2{color:var(--s2)}.s3{color:var(--s3)}.s4{color:var(--s4)}
+.req{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px;margin:0 0 18px}
+.req label{display:flex;gap:10px;align-items:center;padding:12px 14px;background:var(--surf);border:1px solid var(--line);border-radius:10px;cursor:pointer}
+.req input{width:18px;height:18px;accent-color:var(--acc)}
+.res{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:20px}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.card h4{margin:0 0 2px;font-size:16px}.card p{margin:4px 0 0;font-size:14px;color:var(--mut)}
+.bar2{height:8px;background:var(--line);border-radius:9px;overflow:hidden;margin:4px 0 8px}.bar2 i{display:block;height:100%;background:var(--acc)}
+.row{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+input[type=range]{accent-color:var(--acc);width:200px}
+.empty{padding:22px;border:1px dashed var(--line);border-radius:12px;color:var(--mut)}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:20px}
+.two ul{margin:8px 0 0;padding-left:20px;color:var(--mut)}
+footer{max-width:1080px;margin:56px auto 0;padding:24px 20px 40px;border-top:1px solid var(--line);color:var(--mut);font-size:14px}
+@media(max-width:640px){.flow{grid-template-columns:repeat(2,1fr)}.flow div:nth-child(2){border-right:0}.flow div:nth-child(-n+2){border-bottom:1px solid var(--line)}section{padding-top:56px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<header><div class="bar"><span class="logo">TalentaFlow</span>
+<nav aria-label="Seções"><a href="#intro">Introdução</a><a href="#demo">Sistema</a><a href="#triagem">Triagem</a><a href="#avaliacao">Entrevista</a><a href="#criterios">Critérios</a><a href="#conclusao">Conclusão</a></nav></div></header>
+<main>
+<section id="intro" style="padding-top:56px">
+<h1>Candidatos organizados, etapa por etapa.</h1>
+<p class="lead">Hoje vamos demonstrar como funciona um ATS, um sistema utilizado pelo RH para organizar candidatos e acompanhar as etapas de um processo seletivo. Nossa simulação será baseada em uma vaga fictícia de assistente administrativo.</p>
+<div class="flow" id="flow" aria-live="polite"></div>
+<div class="job"><b>Vaga fictícia: Assistente Administrativo</b><br><small>Requisitos: Ensino Médio, informática (Word e Excel), organização e atendimento, disponibilidade de horário.</small></div>
+</section>
+
+<section id="demo">
+<span class="k">Demonstração do sistema</span>
+<h2>Planilha de candidatos</h2>
+<p class="lead">Aqui temos nossa planilha de candidatos, com informações sobre formação, experiência, conhecimentos e etapa atual do processo seletivo. Cada candidato possui um status que permite acompanhar seu andamento.</p>
+<div class="chips" id="chips" role="group" aria-label="Filtrar por status"></div>
+<div class="tw"><table><thead><tr><th>Candidato</th><th>Formação</th><th>Experiência</th><th>Conhecimentos</th><th>Status</th></tr></thead><tbody id="tb"></tbody></table></div>
+</section>
+
+<section id="triagem">
+<span class="k">Simulação da triagem</span>
+<h2>Currículos × requisitos da vaga</h2>
+<p class="lead">Neste momento, estamos analisando os currículos de acordo com os requisitos da vaga. Os candidatos que atendem aos critérios definidos seguem para a próxima etapa. Os demais podem permanecer em análise, dependendo das informações que ainda precisam ser verificadas.</p>
+<div class="req" id="req"></div>
+<div class="row"><button class="btn" id="runT">Executar triagem</button><button class="btn sec" id="reset">Reiniciar simulação</button></div>
+<div class="res" id="res"></div>
+</section>
+
+<section id="avaliacao">
+<span class="k">Avaliação e entrevista</span>
+<h2>Conhecimentos, competências e entrevista</h2>
+<p class="lead">Após a triagem, avaliamos os conhecimentos e as competências relevantes para a função. Os candidatos selecionados são encaminhados para a entrevista, na qual o recrutador poderá conhecer melhor suas experiências, habilidades e interesse pela oportunidade.</p>
+<div class="row"><label for="th">Nota média mínima para entrevista: <b id="thv">83</b></label><input id="th" type="range" min="60" max="95" value="83"><button class="btn" id="runE">Encaminhar para entrevista</button></div>
+<div class="res" id="ev"></div>
+</section>
+
+<section id="criterios">
+<span class="k">Justificativa dos critérios</span>
+<h2>Por que esses critérios?</h2>
+<p class="lead">Utilizamos critérios relacionados aos requisitos da vaga para tornar o processo mais organizado, objetivo e transparente. Também consideramos que cada candidato deve ser avaliado de maneira justa, sem ser prejudicado por características que não sejam relevantes para a função.</p>
+<div class="two">
+<div class="card"><h4>O que entra na avaliação</h4><ul><li>Escolaridade exigida para a vaga</li><li>Conhecimentos em informática</li><li>Experiência em organização e atendimento</li><li>Disponibilidade de horário</li></ul></div>
+<div class="card"><h4>O que não entra na avaliação</h4><ul><li>Nome, aparência ou foto</li><li>Gênero, idade ou estado civil</li><li>Bairro ou local de origem</li><li>Qualquer dado sem relação com a função</li></ul></div>
+</div>
+</section>
+
+<section id="conclusao">
+<span class="k">Conclusão</span>
+<h2>O ATS apoia, a pessoa decide.</h2>
+<p class="lead">Com essa simulação, demonstramos como um ATS pode ajudar o RH a centralizar informações, organizar candidatos e acompanhar o processo seletivo. É importante lembrar que a ferramenta auxilia o recrutador, mas não substitui a análise humana.</p>
+</section>
+</main>
+<footer>Simulação didática com candidatos e vaga fictícios.</footer>
+
+<script>
+const ST=["Inscrição","Em triagem","Avaliação","Entrevista","Não aprovado"];
+const REQ=["Ensino Médio","Informática (Word e Excel)","Organização e atendimento","Disponibilidade de horário"];
+// flags: 1 atende, 0 não atende, null = a verificar (ordem de REQ)
+const C=[
+["Ana Beatriz Souza","Ensino Médio completo","Estágio em recepção (6 meses)","Word, Excel básico",[1,1,1,1],82,78],
+["Lucas Almeida","Ensino Médio completo","Auxiliar de arquivo (1 ano)","Pacote Office, arquivo",[1,1,1,1],88,85],
+["Mariana Costa","Ensino Médio cursando","Sem experiência","Informática básica",[1,1,1,null],70,72],
+["Pedro Santos","Ensino Médio completo","Atendimento ao cliente (2 anos)","Excel, Word",[1,1,1,1],90,80],
+["Juliana Lima","Ensino Médio completo","Voluntariado em ONG","Não informados",[1,null,1,1],74,76],
+["Rafael Pereira","Ensino Fundamental","Serviços gerais","Não informados",[0,0,0,1],50,55],
+["Camila Nunes","Ensino Médio completo","Digitadora freelancer","Digitação, Word",[1,1,1,1],76,88],
+["Thiago Ramos","Ensino Médio completo","Sem experiência","Pacote Office",[1,1,null,1],72,70],
+["Beatriz Carvalho","Ensino Médio completo","Auxiliar administrativo (1 ano)","Word, Excel, organização de arquivos",[1,1,1,1],91,89],
+["Felipe Moreira","Ensino Médio completo","Atendimento em loja (8 meses)","Pacote Office",[1,1,1,1],79,74],
+["Isabela Fernandes","Ensino Médio cursando","Monitora escolar","Informática básica",[1,1,1,null],68,75],
+["Gabriel Tavares","Ensino Fundamental","Ajudante de produção","Não informados",[0,0,1,1],48,60],
+["Larissa Mendes","Ensino Médio completo","Recepcionista (1 ano)","Word, Excel, atendimento",[1,1,1,1],85,90],
+["Diego Araújo","Ensino Médio completo","Estoquista","Excel básico",[1,1,0,1],73,65],
+["Patrícia Gomes","Ensino Médio completo","Sem experiência","Não informados",[1,null,null,1],66,70],
+["Vinícius Barros","Ensino Médio completo","Auxiliar de escritório (6 meses)","Word, Excel",[1,1,1,0],84,80]
+].map(a=>({n:a[0],f:a[1],e:a[2],k:a[3],fl:a[4],kn:a[5],co:a[6],s:0,note:""}));
+let filt=-1,on=[1,1,1,1];
+const $=id=>document.getElementById(id);
+const esc=t=>String(t).replace(/[&<>]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[m]));
+const badge=s=>`<span class="st s${s}">${ST[s]}</span>`;
+const avg=c=>(c.kn+c.co)/2;
+
+function render(){
+  $("flow").innerHTML=[0,1,2,3].map(i=>`<div><b>${C.filter(c=>c.s===i).length}</b><span>${ST[i]}</span></div>`).join("");
+  const all=[-1,0,1,2,3,4];
+  $("chips").innerHTML=all.map(i=>`<button class="chip" aria-pressed="${filt===i}" data-f="${i}">${i<0?"Todos ("+C.length+")":ST[i]+" ("+C.filter(c=>c.s===i).length+")"}</button>`).join("");
+  $("tb").innerHTML=C.filter(c=>filt<0||c.s===filt).map(c=>`<tr><td><b>${esc(c.n)}</b></td><td>${esc(c.f)}</td><td>${esc(c.e)}</td><td>${esc(c.k)}</td><td>${badge(c.s)}${c.note?`<small>${esc(c.note)}</small>`:""}</td></tr>`).join("")||`<tr><td colspan="5">Nenhum candidato neste status.</td></tr>`;
+  const triaged=C.filter(c=>c.note||c.s>1);
+  $("res").innerHTML=triaged.length?C.filter(c=>c.s>0||c.note).map(c=>{
+    const ok=c.s>=2;return `<div class="card"><h4>${esc(c.n)}</h4>${badge(c.s)}<p>${esc(c.note||"Atende a todos os critérios selecionados.")}</p></div>`}).join(""):`<div class="empty">Escolha os critérios e execute a triagem para ver o resultado.</div>`;
+  const ev=C.filter(c=>c.s===2||c.s===3||(c.s===4&&c.ev));
+  $("ev").innerHTML=ev.length?ev.map(c=>`<div class="card"><h4>${esc(c.n)}</h4>${badge(c.s)}
+  <p style="margin-top:10px">Conhecimentos: ${c.kn}</p><div class="bar2"><i style="width:${c.kn}%"></i></div>
+  <p>Competências: ${c.co}</p><div class="bar2"><i style="width:${c.co}%"></i></div>
+  <p><b>Média: ${avg(c).toFixed(1)}</b>${c.s===4?" — "+esc(c.note):""}</p></div>`).join(""):`<div class="empty">Ainda não há candidatos em avaliação. Execute a triagem primeiro.</div>`;
+  $("runE").disabled=!C.some(c=>c.s===2);
+}
+$("req").innerHTML=REQ.map((r,i)=>`<label><input type="checkbox" data-r="${i}" checked> ${r}</label>`).join("");
+$("req").addEventListener("change",e=>{on[+e.target.dataset.r]=e.target.checked?1:0});
+$("chips").addEventListener("click",e=>{const b=e.target.closest("[data-f]");if(b){filt=+b.dataset.f;render()}});
+$("runT").onclick=()=>{
+  C.forEach(c=>{
+    if(c.s>1)return;
+    const act=c.fl.map((v,i)=>on[i]?v:1);
+    const bad=REQ.filter((r,i)=>act[i]===0), unk=REQ.filter((r,i)=>act[i]===null);
+    if(bad.length){c.s=4;c.note="Não atende: "+bad.join(", ")+"."}
+    else if(unk.length){c.s=1;c.note="Em análise. A verificar: "+unk.join(", ")+"."}
+    else{c.s=2;c.note=""}
+  });render();$("triagem").scrollIntoView({block:"start"});
+};
+$("th").oninput=e=>{$("thv").textContent=e.target.value};
+$("runE").onclick=()=>{
+  const t=+$("th").value;
+  C.forEach(c=>{if(c.s!==2)return;if(avg(c)>=t){c.s=3;c.note=""}else{c.s=4;c.ev=true;c.note="Média "+avg(c).toFixed(1)+" abaixo do mínimo de "+t+"."}});render();
+};
+$("reset").onclick=()=>{C.forEach(c=>{c.s=0;c.note="";c.ev=false});filt=-1;render()};
+render();
+</script>
+</body>
+</html>
